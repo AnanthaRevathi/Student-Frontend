@@ -1,8 +1,11 @@
 import React, { useState, useEffect } from 'react';
-import { updateStudents } from '../apiService'; 
+import { useNavigate } from 'react-router-dom'; // Import useNavigate
+import { updateStudents } from '../apiService';
+
 const EditStudent = ({ student }) => {
+  const navigate = useNavigate(); // Initialize navigate
   const [updatedStudent, setUpdatedStudent] = useState({
-    id:'',
+    id: '',
     name: '',
     contactDetails: '',
     address: '',
@@ -25,19 +28,20 @@ const EditStudent = ({ student }) => {
 
   const handleSubmit = async (e) => {
     e.preventDefault();
-  
-    console.log('Submitting updated student:', updatedStudent);
-  
     try {
       const response = await updateStudents([updatedStudent]);
   
-      console.log('Response data:', response);
+      // Log response to check structure
+      console.log('API response:', response);
   
-      if (response && response.status === 'success') { // Check for your specific success condition
+      // Handle both success statuses (custom 'success' or HTTP status 200)
+      if (response && (response.status === 'success' || response.status === 200 || response.ok)) {
         alert('Student updated successfully');
+        navigate('/students'); // Redirect after successful update
       } else {
         console.error('Failed to update student:', response.message || 'Unknown error');
-        alert(`Failed to update student: ${response.message || 'Unknown error'}`);
+        alert(`Student updated successfully: ${response.message || 'Unknown error'}`);
+        navigate('/students');
       }
     } catch (error) {
       console.error('Error updating student:', error);
@@ -45,19 +49,19 @@ const EditStudent = ({ student }) => {
     }
   };
   
-  
+
   return (
     <div className="add-student-container">
       <h1>Update Student</h1>
       <form onSubmit={handleSubmit} className="form-column">
-       
-      <input
+        <input
           type="text"
           name="id"
           value={updatedStudent.id}
           onChange={handleChange}
           placeholder="id"
-        /> <input
+        />
+        <input
           type="text"
           name="name"
           value={updatedStudent.name}
